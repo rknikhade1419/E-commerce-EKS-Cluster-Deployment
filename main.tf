@@ -4,21 +4,35 @@ module "eks" {
 
   cluster_name    = "ecommerce-cluster"
   cluster_version = "1.28"
-
-  vpc_id                         = module.vpc.vpc_id
-  subnet_ids                     = module.vpc.private_subnets
-  cluster_endpoint_public_access = true
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
 
   eks_managed_node_groups = {
-    dev_nodes = {
-      min_size     = 2
-      max_size     = 5
-      desired_size = 3
+    ecom_nodes = {
+      # Custom Instance Type (2 vCPU, 4GB RAM)
+      instance_types = ["c7i-flex.large"] 
+      
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2 # 2 nodes ensure your MySQL and Backend have enough space
 
-      instance_types = ["t3.medium"]
-      ami_type       = "AL2023_x86_64_STANDARD"
+      # Your requested 20GB Storage
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 20
+            volume_type           = "gp3"
+            delete_on_termination = true
+          }
+        }
+      }
+
+      capacity_type = "ON_DEMAND"
+      
+      labels = {
+        role = "worker"
+      }
     }
   }
-
-  enable_irsa = true # Mandatory for OIDC & IAM roles
 }
