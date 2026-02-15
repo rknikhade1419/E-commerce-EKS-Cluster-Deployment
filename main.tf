@@ -9,14 +9,15 @@ module "eks" {
 
   eks_managed_node_groups = {
     ecom_nodes = {
-      # Custom Instance Type (2 vCPU, 4GB RAM)
+      # ADD THIS LINE TO FIX THE AMI ERROR
+      ami_type = "AL2_x86_64"
+
       instance_types = ["c7i-flex.large"] 
       
       min_size     = 1
       max_size     = 3
-      desired_size = 2 # 2 nodes ensure your MySQL and Backend have enough space
+      desired_size = 2 
 
-      # Your requested 20GB Storage
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
