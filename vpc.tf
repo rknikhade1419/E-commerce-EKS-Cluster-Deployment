@@ -10,5 +10,20 @@ module "vpc" {
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
 
   enable_nat_gateway = true
-  single_nat_gateway = true # Crucial for keeping costs low
+  single_nat_gateway = true # Good for saving costs in Dev/Test environments
+
+  # CRITICAL: DNS Support is required for EKS nodes to find the API server
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  # CRITICAL: Tags for AWS Load Balancer Controller
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+    "kubernetes.io/cluster/ecommerce-cluster" = "shared" 
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/ecommerce-cluster" = "shared"
+  }
 }
