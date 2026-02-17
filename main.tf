@@ -7,11 +7,12 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   subnet_ids      = module.vpc.private_subnets
 
+  # ADD THIS for Jenkins connectivity
+  cluster_endpoint_public_access = true 
+
   eks_managed_node_groups = {
     ecom_nodes = {
-      # ADD THIS LINE TO FIX THE AMI ERROR
       ami_type = "AL2_x86_64"
-
       instance_types = ["c7i-flex.large"] 
       
       min_size     = 1
